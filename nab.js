@@ -3,7 +3,7 @@
 
     // Utils
 
-    var extend = function (obj, props) {
+    var extend = function(obj, props) {
         for (var prop in props) {
             if (props.hasOwnProperty(prop)) {
                 if (obj[prop]) alert(prop + ' is already on the native Element object');
@@ -12,7 +12,7 @@
         }
     }
 
-    var classes = function(className){
+    var classes = function(className) {
         var classNames = (className || '').replace(/\s+/g, ' ').trim().split(' ');
         var uniques = {};
         return classNames.filter(function(className){
@@ -29,7 +29,7 @@
 
     // CONSTRUCTOR
 
-    var nab = function(selector){
+    var nab = function(selector) {
         var elements = typeof selector == 'string' ? document.querySelector(selector) : selector;
         // var elements = typeof selector == 'string' ? document.querySelectorAll(selector) : selector;
         return elements;
@@ -42,7 +42,7 @@
 
     };
 
-    var $$ = function(selector){
+    var $$ = function(selector) {
         var elements = typeof selector == 'string' ? document.querySelectorAll(selector) : selector;
         return Array.prototype.slice.call(elements);
     };
@@ -54,30 +54,26 @@
 
         // DOM WALKERS
 
-        first: function (selector) {
+        first: function(selector) {
             var matches = this.querySelectorAll(selector || '*');
             // console.log(matches);
             return matches ? matches[0] : null;
         },
 
-        // find: function(selector) {
-        find: function (selector) {
+        find: function(selector) {
             var matches = this.querySelectorAll(selector);
             return matches && matches.length ? Array.prototype.slice.call(matches) : null;
         },
 
         kids: function(selector) {
-            // var matches = this.relative('children', selector);
-            // return matches && matches.length ? Array.prototype.slice.call(matches) : null;
-
             return this.relative('children', selector);
         },
 
-        previous: function (selector) {
+        previous: function(selector) {
             return this.relative('previousSibling', selector);
         },
 
-        next: function (selector) {
+        next: function(selector) {
             return this.relative('nextSibling', selector);
         },
 
@@ -85,7 +81,7 @@
             return this.relative('parentNode', selector);
         },
 
-        relative: function (type, selector) {
+        relative: function(type, selector) {
             var relative = this[type];
             if (selector) {
                 var all = document.querySelectorAll(selector);
@@ -93,33 +89,32 @@
             }
 
             return relative && relative.length ? Array.prototype.slice.call(relative) : (relative || null);
-            // return relative;
         },
 
         // SIZE & POSITION
-        
-        width: function(){
+
+        width: function() {
             return this.offsetWidth;
         },
 
-        height: function(){
+        height: function() {
             return this.offsetHeight;
         },
 
-        getSize: function(){
+        size: function() {
             return {
                 width: this.width(),
                 height: this.height()
             };
         },
 
-        destroy: function(){
+        destroy: function() {
             this.parent().removeChild(this);
         },
 
         // EVENTS
 
-        on: function (eventName, selector, fn) {
+        on: function(eventName, selector, fn) {
             if (arguments.length != 3) {
                 var fn = selector;
             }
@@ -155,7 +150,7 @@
         // MANIPULATION
 
         html: function(value, text) {
-            var prop = text ? ('innerText' in document.createElement('div') ? 'innerText' : 'textContent') : 'innerHTML';
+            var prop = text ? 'textContent' : 'innerHTML';
 
             if (value) {
                 this[prop] = typeof value == 'function' ? value(this[prop]) : value;
@@ -179,42 +174,42 @@
             }
         },
 
-        hasClass: function (className) {
+        hasClass: function(className) {
             return this.classList.contains(className);
         },
 
-        addClass: function (className) {
+        addClass: function(className) {
             classes(className).forEach(function(name){
                 this.classList.add(name);
             }, this);
             return this;
         },
 
-        removeClass: function (className) {
+        removeClass: function(className) {
             classes(className).forEach(function(name){
                 this.classList.remove(name);
             }, this);
             return this;
         },
 
-        toggleClass: function (className, force) {
+        toggleClass: function(className, force) {
             if (force == null) force = !this.hasClass(className);
             return (force) ? this.addClass(className) : this.removeClass(className);
         },
 
         // DISPLAY TOGGLERS
 
-        show: function (type) {
+        show: function(type) {
             this.style.display = type || '';
             return this;
         },
 
-        hide: function () {
+        hide: function() {
             this.style.display = 'none';
             return this;
         },
 
-        toggle: function (callback, type) {
+        toggle: function(callback, type) {
             type = type || '';
             callback = callback || function(){};
             return this.each(function (el) {
