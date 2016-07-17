@@ -1,7 +1,7 @@
 
 (function(){
 
-    // Utils
+    // UTILS
 
     var extend = function(obj, props) {
         for (var prop in props) {
@@ -27,19 +27,23 @@
         return false;
     }
 
-    // CONSTRUCTOR
+    var hyphenatedToCamelCase = function(str) {
+        return str.replace(/-([a-z])/g, function(g){
+            return g[1].toUpperCase();
+        });
+    }
+
+    var includes = function(arr, item){
+        return arr.indexOf(item) != -1;
+    }
+
+    // QUERY SELECTOR
 
     var nab = function(selector) {
-        var elements = typeof selector == 'string' ? document.querySelector(selector) : selector;
+        // figure out how to decipher between a selector for a single element vs array
         // var elements = typeof selector == 'string' ? document.querySelectorAll(selector) : selector;
+        var elements = typeof selector == 'string' ? document.querySelector(selector) : selector;
         return elements;
-
-        // if (elements) {
-        //     elements = typeof elements !== 'string' && !elements.nodeType && typeof elements.length !== 'undefined' ? elements : [elements];
-        //     this.length = elements.length
-        //     for (var i = 0; i < elements.length; i++) this[i] = elements[i]
-        // }
-
     };
 
     var $$ = function(selector) {
@@ -56,13 +60,12 @@
 
         first: function(selector) {
             var matches = this.querySelectorAll(selector || '*');
-            // console.log(matches);
             return matches ? matches[0] : null;
         },
 
         find: function(selector) {
             var matches = this.querySelectorAll(selector);
-            return matches && matches.length ? Array.prototype.slice.call(matches) : null;
+            return matches ? Array.prototype.slice.call(matches) : null;
         },
 
         kids: function(selector) {
@@ -91,7 +94,7 @@
             return relative && relative.length ? Array.prototype.slice.call(relative) : (relative || null);
         },
 
-        // SIZE & POSITION
+        // SIZE COORDINATES & POSITION
 
         width: function() {
             return this.offsetWidth;
@@ -108,9 +111,21 @@
             };
         },
 
-        destroy: function() {
-            this.parent().removeChild(this);
+        offset: function() {
+            var rect = this.getBoundingClientRect();
+            return {
+                left: rect.left + document.body.scrollLeft,
+                top: rect.top + document.body.scrollTop
+            };
         },
+
+        position: function() {
+            return {
+                left: this.offsetLeft,
+                top: this.offsetTop
+            };
+        },
+
 
         // EVENTS
 
@@ -147,7 +162,7 @@
         // fire
 
 
-        // MANIPULATION
+        // DOM MANIPULATION
 
         html: function(value, text) {
             var prop = text ? 'textContent' : 'innerHTML';
@@ -165,12 +180,67 @@
         },
 
         data: function(name, value){
-            // will probably need to add camelize for multi hyphen data attributes
+            name = hyphenatedToCamelCase(name);
+
             if (value) {
                 this.dataset[name] = value;
                 return this;
             } else {
                 return this.dataset[name];
+            }
+        },
+
+        clone: function() {
+            return this.cloneNode(true);
+        },
+
+        destroy: function() {
+            this.parent().removeChild(this);
+        },
+
+        before: function(html) {
+            this.insertAdjacentHTML('beforebegin', html);
+            return this;
+        },
+
+        after: function(html) {
+            this.insertAdjacentHTML('afterend', html);
+            return this;
+        },
+
+        prepend: function(el) {
+            var parent = this.parent();
+            parent.insertBefore(el, parent.firstChild);
+            return this;
+        },
+
+        append: function(el) {
+            this.parent().appendChild(el);
+            return this;
+        },
+
+        empty: function() {
+            this.innerHTML = '';
+            return this;
+        },
+
+        attribute: function(attr, value) {
+            if (value) {
+                this.setAttribute(attr, value);
+                return this;
+            } else {
+                return this.getAttribute(attr);
+            }
+        },
+
+        css: function(prop, value) {
+            prop = hyphenatedToCamelCase(prop);
+
+            if (value && typeof value == 'string') {
+                this.style[prop] = value;
+                return this;
+            } else {
+                return getComputedStyle(this)[prop];
             }
         },
 
@@ -224,14 +294,25 @@
         return this;
     }
 
-    var arrMethods = ['html', 'text', 'data', 'addClass', 'removeClass', 'toggleClass', 'show', 'hide', 'toggle'];
-    arrMethods.forEach(function(method){
+    // array methods
+    var eachMethods = ['html', 'text', 'css', 'data', 'attribute', 'empty', 'destroy', 'hasClass', 'addClass', 'removeClass', 'toggleClass', 'show', 'hide', 'toggle'];
+    var mappableMethods = ['html', 'text', 'css', 'data', 'hasClass', 'attribute'];
+
+    eachMethods.forEach(function(method){
         Array.prototype[method] = function(){
             var args = arguments;
-            this.forEach(function(item){
-                item[method].apply(item, args);
-            });
-            return this;
+
+            if (includes(mappableMethods, method) && args.length == 1) {
+                return this.map(function(item){
+                    return item[method].apply(item, args);
+                });
+
+            } else {
+                this.forEach(function(item){
+                    item[method].apply(item, args);
+                });
+                return this;
+            }
         }
     });
 

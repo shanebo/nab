@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<meta name="robots" content="noindex">
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Nab Demo</title>
+
+    <style>
+        body {
+            font-family: helvetica;
+            font-size: 16px;
+        }
+
+        * {
+            /*margin: 0;*/
+            padding: 0;
+        }
+
+        .foo {
+            background: #f33;
+        }
+
+        .elipses {
+            width: 30%;
+            height: 130px;
+            overflow: hidden;
+            background-color: #eaf;
+        }
+
+        .elipses div {
+            position: relative;
+        }
+
+        p {
+            font-size: 12px;
+            line-height: 18px;
+            padding: 0px;
+            margin: 0px;
+            margin-bottom: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <section id="for" class="real">
+        <div class="mama">
+            <div class="yo">
+                <ul id="list">
+                    <li id="test-with-new-way" data-wasabi="is good">Test with way</li>
+                    <li id="data-test" data-wasabi="is good">data attribute</li>
+                    <li class="yes">will click</li>
+                    <li class="no">ignored</li>
+                    <li class="no">ignored</li>
+                    <li class="diff">diff</li>
+                    <li id="dude" class="powerful">dude powerfull</li>
+                    <li class="yes">will click</li>
+                    <li class="diff">diff</li>
+                    <li class="diff">diff</li>
+                    <li class="deeper"><a href="#">deeper</a></li>
+                    <li id="nicely" class="done">nicely done</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="selects">
+
+        <select id="country" name="country">
+            <option selected="selected" value="">All</option>
+            <option value="0">Guam</option>
+            <option value="1">New Zealand</option>
+            <option value="2">Philippines</option>
+            <option value="3">United States</option>
+        </select>
+
+        <select class="state" name="country">
+            <option selected="selected" value="">All</option>
+            <option value="0">State 1</option>
+            <option value="1">State 2</option>
+            <option value="2">State 3</option>
+        </select>
+
+        <select class="state" name="country">
+            <option selected="selected" value="">All</option>
+            <option value="0">State 1</option>
+            <option value="1">State 2</option>
+            <option value="2">State 3</option>
+        </select>
+
+        <select class="state" name="country">
+            <option selected="selected" value="">All</option>
+            <option value="0">State 1</option>
+            <option value="1">State 2</option>
+            <option value="2">State 3</option>
+        </select>
+
+    </section>
+
+
+
+
+
+    <script type="text/javascript" charset="utf-8" src="nab.js"></script>
+    <script type="text/javascript">
+
+        // decide on API
+
+        var test = document.id('for');
+        var testClone = test.clone();
+
+        $$('#list li').css('background-color', '#eaf');
+        $$('#list li').hide();
+        $('#list li').addClass('foo');
+        $$('#list li').html('yo').addClass('foo');
+        $$('#list li').css('background-color');
+        $('#data-test').next('li#nicely.done').toggleClass('foo');
+        $('#nicely').previous('li#dude.powerful').toggleClass('foo');
+        $$('#list li').show();
+
+        // multiple selectors
+        document.body.on('change', '#country, .state', function(e) {
+            var el = e.target;
+            var text = el.options[el.selectedIndex].text;
+            console.log(text);
+        });
+
+        $('#data-test').on('click', function(e) {
+            e.target.data('wasabi', 'es no bueno').html(e.target.data('wasabi'));
+        });
+
+        $('#list').on('click', '.deeper > a', function(e) {
+            e.preventDefault();
+            console.log(e.target.innerHTML);
+            console.log(e.target);
+            console.log('has foo ' + e.target.hasClass('foo'));
+            e.target.html('it worked').toggleClass('foo');
+        });
+
+        $('#list').on('click', '.yes', function(e) {
+            e.target.text('it worked');
+            console.log(e.target.innerHTML);
+        });
+
+        $('#list li.diff').on('click', function(e) {
+            console.log(e.target.innerHTML);
+        });
+
+        $('#dude.powerful').on('click', function(e) {
+            e.target.hide();
+        });
+
+        console.log($$('#list li').css('background-color'));
+        console.log($$('#list li').hasClass('foo'));
+        console.log(testClone);
+        console.log('test === testClone: ' + test === testClone);
+        console.log(test.offset());
+        console.log(test.position());
+
+    </script>
+
+</body>
+
+</html>
