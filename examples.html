@@ -104,10 +104,22 @@
 
 
 
-    <script type="text/javascript" charset="utf-8" src="nab.js"></script>
+    <script type="text/javascript" charset="utf-8" src="nab-min.js"></script>
     <script type="text/javascript">
 
         // decide on API
+
+        console.log('   hello        world    '.clean());
+        console.log('   hello        world    '.hyphenate());
+        console.log('   hello        world    '.capitalize());
+        console.log('hello-world'.camelCase());
+        console.log('    hello_world-Nice   and Dont'.camelCase());
+        console.log('    hello_world  '.contains('hello_world'));
+        console.log('   hyphenate _ with _ underscores_okay_my_friend    '.hyphenate());
+
+        // console.log('900'.toInt());
+        // console.log('900.0000'.toFloat());
+
 
         var test = document.id('for');
         var testClone = test.clone();
